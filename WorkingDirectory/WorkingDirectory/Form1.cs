@@ -24,7 +24,8 @@ namespace Ejer4Tema3
         private void button1_Click(object sender, EventArgs e)
         {
             string chDir="";
-            if(textBox1.Text.StartsWith("%") && textBox1.Text.EndsWith("%"))
+            DirectoryInfo d = null;
+            if (textBox1.Text.StartsWith("%") && textBox1.Text.EndsWith("%"))
             {
                 string enVar = textBox1.Text.Substring(1, textBox1.Text.Length - 2);
                 try
@@ -33,11 +34,11 @@ namespace Ejer4Tema3
                 }
                 catch (ArgumentNullException)
                 {
-                    label2.Text = "Variable de entorno no encontrada";
+                    label2.Text = "Environment variable not found";
                 }
                 catch (SecurityException)
                 {
-                    label2.Text = "Acceso no autorizado";
+                    label2.Text = "Access unauthorized";
                 }
             }
             else
@@ -46,8 +47,7 @@ namespace Ejer4Tema3
             }
             if (ComprobarDirectorio(chDir))
             {
-                bool valido = false;
-                DirectoryInfo d = null;
+                bool valido = false;                
                 label2.Text = "";
                 try
                 {
@@ -56,12 +56,13 @@ namespace Ejer4Tema3
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    label2.Text = "Acceso no autorizado";
+                    label2.Text = "Access unauthorized";
                     valido = false;
                 }
                 if (valido)
                 {
-                    textBox2.Text = "SUBDIRECTORIOS\r\n";
+                    textBox2.Text = "CURRENT DIRECTORY:   " + d.FullName+ "\r\n\r\n";
+                    textBox2.Text += "SUBDIRECTORIES\r\n";
                     if (d.GetDirectories().Length > 0)
                     {
                         foreach (DirectoryInfo dir in d.GetDirectories())
@@ -71,11 +72,11 @@ namespace Ejer4Tema3
                     }
                     else
                     {
-                        textBox2.Text += "No contiene subdirectorios";
+                        textBox2.Text += "Not found";
                     }
 
 
-                    textBox2.Text += "\r\n \r\nARCHIVOS\r\n";
+                    textBox2.Text += "\r\n \r\nFILES\r\n";
                     if (d.GetFiles().Length > 0)
                     {
                         foreach (FileInfo arch in d.GetFiles())
@@ -85,7 +86,7 @@ namespace Ejer4Tema3
                     }
                     else
                     {
-                        textBox2.Text += "No contiene archivos";
+                        textBox2.Text += "Not found";
                     }
                 }                                
             }            
@@ -94,39 +95,31 @@ namespace Ejer4Tema3
         private bool ComprobarDirectorio(string chDir)
         {
             try
-            {
+            {                
                 Directory.SetCurrentDirectory(chDir);
 
             }
             catch (DirectoryNotFoundException)
             {
-                label2.Text = "Directorio no encontrado";
+                label2.Text = "Directory not found";
                 return false;
             }
             catch (SecurityException)
             {
-                label2.Text = "No tienes el permiso requerido";
+                label2.Text = "Access denied";
                 return false;
             }
             catch (ArgumentException)
             {
-                label2.Text = "Ruta no válida";
+                label2.Text = "Paht invalid";
                 return false;
             }
             catch (IOException ex)
             {
-                label2.Text = "Error: " + ex.Message;
+                label2.Text = "Error: it is a file";
                 return false;
             }
             return true;
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {            
-            if(textBox1.TextLength == 0)
-            {
-                label2.Text = "";
-            }
         }
     }
 }
